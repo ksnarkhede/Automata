@@ -1,0 +1,23 @@
+name: Enable Auto-Merge
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  enable_auto_merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Enable Auto-Merge
+        env:
+          TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          PR_NUMBER=$(jq -r '.pull_request.number' < "$GITHUB_EVENT_PATH")
+          curl -X PUT \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/auto_merge
